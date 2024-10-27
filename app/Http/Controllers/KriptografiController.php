@@ -79,7 +79,7 @@ class KriptografiController extends Controller
             return view('decryption')->with('plainText', $plainText);
         } else {
             // Jika tidak ditemukan, berikan pesan error
-            return redirect()->back()->withErrors(['message' => 'Key atau Cipher text tidak sesuai!']);
+            return redirect()->back()->withInput()->with('error', 'Key atau Cipher text tidak sesuai!');
         }
     }
 
@@ -93,12 +93,12 @@ class KriptografiController extends Controller
             $messageNumbers[] = ord($message[$i]) - ord('A'); // A=0, B=1, ...
         }
 
-        // Jika jumlah huruf ganjil, tambahkan padding (misal 'X')
+        // Jika jumlah huruf ganjil, tambahkan padding 'X'
         if (count($messageNumbers) % 2 != 0) {
             $messageNumbers[] = ord('X') - ord('A');
         }
 
-        // Matriks key [2 3] [1 4]
+        // Matriks key 
         $keyMatrix = [
             [2, 3],
             [1, 4]
@@ -112,7 +112,7 @@ class KriptografiController extends Controller
             $C1 = ($keyMatrix[0][0] * $P1 + $keyMatrix[0][1] * $P2) % 26;
             $C2 = ($keyMatrix[1][0] * $P1 + $keyMatrix[1][1] * $P2) % 26;
             $cipherText[] = chr($C1 + ord('A')); // Konversi kembali ke huruf
-            $cipherText[] = chr($C2 + ord('A')); // Konversi kembali ke huruf
+            $cipherText[] = chr($C2 + ord('A'));
         }
 
         return implode('', $cipherText); // Gabungkan array menjadi string
@@ -121,14 +121,14 @@ class KriptografiController extends Controller
     // Fungsi untuk dekripsi Hill Cipher
     private function hillCipherDecrypt($cipherText)
     {
-        // Ubah cipher text menjadi array angka (huruf besar ke angka basis 0)
-        $cipherText = strtoupper($cipherText); // Ubah ke huruf besar (pastikan input huruf besar)
+        // Ubah cipher text menjadi array angka 
+        $cipherText = strtoupper($cipherText); // Ubah ke huruf besar 
         $cipherNumbers = [];
         for ($i = 0; $i < strlen($cipherText); $i++) {
             $cipherNumbers[] = ord($cipherText[$i]) - ord('A'); // A=0, B=1, ...
         }
 
-        // Invers dari key matriks [2 3] [1 4] adalah [6 15] [5 16]
+        // Invers dari key matriks 
         $keyInverseMatrix = [
             [6, 15],
             [5, 16]
